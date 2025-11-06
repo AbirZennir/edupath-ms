@@ -1,0 +1,6 @@
+pandas
+numpy
+ydata-profiling
+matplotlib
+seaborn
+scikit-learn
