@@ -19,8 +19,8 @@ public class StudentRegistration {
 
     @ManyToOne
     @JoinColumns({
-            @JoinColumn(name = "code_module", referencedColumnName = "codeModule", insertable=false, updatable=false),
-            @JoinColumn(name = "code_presentation", referencedColumnName = "codePresentation", insertable=false, updatable=false)
+            @JoinColumn(name = "code_module", referencedColumnName = "code_module", insertable=false, updatable=false),
+            @JoinColumn(name = "code_presentation", referencedColumnName = "code_presentation", insertable=false, updatable=false)
     })
     private Courses course;
 }
