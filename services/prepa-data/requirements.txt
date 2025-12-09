@@ -4,3 +4,5 @@ ydata-profiling
 matplotlib
 seaborn
 scikit-learn
+torch
+scikit-learn
