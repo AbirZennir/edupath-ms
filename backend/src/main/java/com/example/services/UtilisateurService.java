@@ -34,11 +34,7 @@ public class UtilisateurService {
     }
 
     public Utilisateur findByEmail(String email) {
-        Utilisateur utilisateur = userRepository.findByEmail(email);
-        if (utilisateur == null) {
-            throw new RuntimeException("Aucun utilisateur trouvé avec cet email");
-        }
-        return utilisateur;
+        return userRepository.findByEmail(email);
     }
 
     private Role mapRole(String rawRole) {
