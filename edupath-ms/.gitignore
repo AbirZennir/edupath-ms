@@ -26,14 +26,3 @@ logs/
 tmp/
 .env
 .env.*
-db-credentials.md
-frontendmobile/edupath-ms/
-
-# OULAD data
-datasets/oulad/**
-!datasets/oulad/README.md
-!datasets/oulad/cleaned/reports/**
-# Large data formats
-*.csv
-*.parquet
-*.zip
