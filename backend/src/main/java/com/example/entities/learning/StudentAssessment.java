@@ -18,11 +18,11 @@ public class StudentAssessment {
     private float score;
 
     @ManyToOne
-    @JoinColumn(name = "id_student")
+    @JoinColumn(name = "id_student", insertable = false, updatable = false)
     private StudentInfo student;
 
     @ManyToOne
-    @JoinColumn(name = "id_assessment")
+    @JoinColumn(name = "id_assessment", insertable = false, updatable = false)
     private Assessment assessment;
 
 }
