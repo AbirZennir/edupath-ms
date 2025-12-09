@@ -1,11 +1,16 @@
 package com.example.controllers;
 
+import com.example.dto.AuthResponse;
+import com.example.dto.LoginRequest;
+import com.example.dto.RegisterRequest;
 import com.example.entities.Utilisateur;
-import com.example.repositories.UserRepository;
 import com.example.security.JwtUtils;
 import com.example.services.UtilisateurService;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.http.HttpStatus;
+import org.springframework.http.ResponseEntity;
 import org.springframework.security.crypto.password.PasswordEncoder;
+import org.springframework.web.bind.annotation.ExceptionHandler;
 import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
@@ -21,28 +26,32 @@ public class AuthController {
     private UtilisateurService utilisateurService;
 
     @Autowired
-    private UserRepository userRepository;
-
-    @Autowired
     JwtUtils jwtUtils;
 
     @Autowired
     private PasswordEncoder passwordEncoder;
 
     @PostMapping("/register")
-    public Utilisateur register(@RequestBody Utilisateur utilisateur){
-        return utilisateurService.register(utilisateur);
+    public ResponseEntity<AuthResponse> register(@RequestBody RegisterRequest request){
+        Utilisateur created = utilisateurService.register(request);
+        String token = jwtUtils.generateToken(created.getEmail());
+        return ResponseEntity.status(HttpStatus.CREATED).body(new AuthResponse(token));
     }
 
     @PostMapping("/login")
-    public Map<String,String> login(@RequestBody Map<String,String> loginData){
-        String email = loginData.get("email");
-        String password = loginData.get("password");
+    public ResponseEntity<AuthResponse> login(@RequestBody LoginRequest loginData){
+        String email = loginData.getEmail();
+        String password = loginData.getPassword();
         Utilisateur utilisateur = utilisateurService.findByEmail(email);
         if (utilisateur == null || !passwordEncoder.matches(password, utilisateur.getPassword())) {
-            throw new RuntimeException("Email ou mot de passe incorrect");
+            return ResponseEntity.status(HttpStatus.UNAUTHORIZED).build();
         }
         String token = jwtUtils.generateToken(email);
-        return Map.of("token", token);
+        return ResponseEntity.ok(new AuthResponse(token));
+    }
+
+    @ExceptionHandler(RuntimeException.class)
+    public ResponseEntity<Map<String, String>> handleRuntime(RuntimeException ex) {
+        return ResponseEntity.status(HttpStatus.BAD_REQUEST).body(Map.of("error", ex.getMessage()));
     }
 }
