@@ -4,8 +4,15 @@ from pathlib import Path
 import joblib
 import numpy as np
 import pandas as pd
-from sklearn.metrics import accuracy_score, classification_report
+from sklearn.metrics import (
+    accuracy_score,
+    classification_report,
+    confusion_matrix,
+    roc_auc_score,
+    roc_curve,
+)
 from sklearn.preprocessing import StandardScaler
+import matplotlib.pyplot as plt
 
 import torch
 import torch.nn as nn
@@ -254,7 +261,7 @@ def train_model(model, train_loader, val_loader, device,
 
 
 # ============================================================
-#  Évaluation finale + export prédictions
+#  Evaluation finale + export predictions
 # ============================================================
 
 def evaluate_and_save(model, test_df, feature_cols, target_col, device):
@@ -271,38 +278,90 @@ def evaluate_and_save(model, test_df, feature_cols, target_col, device):
     preds = (probs >= 0.5).astype(int).ravel()
 
     acc = accuracy_score(y, preds)
+    clf_dict = classification_report(y, preds, output_dict=True)
+    clf_txt = classification_report(y, preds)
+    cm = confusion_matrix(y, preds)
+    auc = roc_auc_score(y, probs)
+    fpr, tpr, _ = roc_curve(y, probs)
+
     print("\n===== Performance finale sur le test =====")
     print("Accuracy :", acc)
     print("\nClassification report :")
-    print(classification_report(y, preds))
+    print(clf_txt)
+    print("Confusion matrix :")
+    print(cm)
+    print(f"ROC-AUC : {auc:.4f}")
 
-    # Export CSV des prédictions
+    # Export CSV des predictions
     out_df = pd.DataFrame({
         "id_student": test_df["id_student"],
         "code_presentation": test_df["code_presentation"],
         "risk_score": probs.ravel(),
         "prediction": preds,
-        "cluster": np.nan,  # colonne optionnelle pour futur lien avec les clusters
+        "cluster": np.nan,
     })
 
     out_path = PRED_DIR / "pred_risk.csv"
     out_df.to_csv(out_path, index=False)
-    print(f"\n📁 Fichier de prédictions généré : {out_path}")
+    print(f"\nPredictions sauvegardees : {out_path}")
 
+    # Courbe ROC
+    roc_path = MODEL_DIR / "roc_curve.png"
+    plt.figure(figsize=(6, 5))
+    plt.plot(fpr, tpr, label=f"ROC (AUC={auc:.3f})")
+    plt.plot([0, 1], [0, 1], "k--", label="Random")
+    plt.xlabel("False Positive Rate")
+    plt.ylabel("True Positive Rate")
+    plt.title("Risk Model ROC")
+    plt.legend(loc="lower right")
+    plt.tight_layout()
+    plt.savefig(roc_path)
+    plt.close()
+    print(f"Courbe ROC sauvegardee : {roc_path}")
+
+    # Rapport Markdown
+    report_path = MODEL_DIR / "report.md"
+    f1_0 = clf_dict.get("0", {}).get("f1-score", float("nan"))
+    f1_1 = clf_dict.get("1", {}).get("f1-score", float("nan"))
+    with open(report_path, "w", encoding="utf-8") as f:
+        f.write("# Risk Model Report\n\n")
+        f.write("## Hyperparametres\n")
+        f.write("- Modele : RiskMLP (WeightNorm)\n")
+        f.write("- lr=1e-3, epochs=20, patience=4\n")
+        f.write("- Hidden layers : (128, 64)\n")
+        f.write("- Dropout=0.2\n\n")
+
+        f.write("## Donnees\n")
+        f.write(f"- Taille test : {len(test_df)}\n")
+        f.write("- Features : 6 numeriques (sum_click_total, n_assessments, eng_clicks_per_day, assess_per_10days, studied_credits, num_of_prev_attempts)\n\n")
+
+        f.write("## Metriques (test)\n")
+        f.write(f"- Accuracy : {acc:.4f}\n")
+        f.write(f"- F1 classe 0 : {f1_0:.4f}\n")
+        f.write(f"- F1 classe 1 : {f1_1:.4f}\n")
+        f.write(f"- ROC-AUC : {auc:.4f}\n")
+        f.write(f"- Confusion matrix : TN={cm[0][0]}, FP={cm[0][1]}, FN={cm[1][0]}, TP={cm[1][1]}\n\n")
+
+        f.write("## Fichiers generes\n")
+        f.write(f"- Modele : {MODEL_DIR / 'risk_model.pt'}\n")
+        f.write(f"- Scaler : {MODEL_DIR / 'scaler.pkl'}\n")
+        f.write(f"- Predictions : {out_path}\n")
+        f.write(f"- Courbe ROC : {roc_path}\n")
+    print(f"Rapport sauvegarde : {report_path}")
 
 # ============================================================
 #  MAIN
 # ============================================================
 
 def main():
-    print(f"📂 FE_DIR    = {FE_DIR}")
-    print(f"📂 MODEL_DIR = {MODEL_DIR}")
-    print(f"📂 PRED_DIR  = {PRED_DIR}")
+    print(f"FE_DIR    = {FE_DIR}")
+    print(f"MODEL_DIR = {MODEL_DIR}")
+    print(f"PRED_DIR  = {PRED_DIR}")
 
     train_df, val_df, test_df, feature_cols, meta_cols, target_col = load_splits()
 
-    print(f"🔹 {len(train_df)} lignes train, {len(val_df)} val, {len(test_df)} test")
-    print(f"🔹 {len(feature_cols)} features numériques : {feature_cols[:5]}...")
+    print(f"{len(train_df)} lignes train, {len(val_df)} val, {len(test_df)} test")
+    print(f"{len(feature_cols)} features numeriques : {feature_cols[:5]}...")
 
     # Nettoyage + standardisation
     scaler, train_s, val_s, test_s = standardize(
@@ -312,11 +371,11 @@ def main():
     # Sauvegarde scaler
     scaler_path = MODEL_DIR / "scaler.pkl"
     joblib.dump(scaler, scaler_path)
-    print(f"💾 Scaler sauvegardé : {scaler_path}")
+    print(f"Scaler sauvegarde : {scaler_path}")
 
     # Device
     device = torch.device("cuda" if torch.cuda.is_available() else "cpu")
-    print(f"🔹 Device utilisé : {device}")
+    print(f"Device utilise : {device}")
 
     # Dataloaders
     train_loader = make_loader(train_s, feature_cols, target_col,
@@ -342,7 +401,7 @@ def main():
     # Sauvegarde du modèle
     model_path = MODEL_DIR / "risk_model.pt"
     torch.save(model.state_dict(), model_path)
-    print(f"💾 Modèle sauvegardé : {model_path}")
+    print(f"Modele sauvegarde : {model_path}")
 
     # Évaluation + export prédictions
     evaluate_and_save(model, test_s, feature_cols, target_col, device)
