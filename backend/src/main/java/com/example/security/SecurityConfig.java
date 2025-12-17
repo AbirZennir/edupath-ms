@@ -23,7 +23,9 @@ public class SecurityConfig {
         http
                 .csrf(csrf -> csrf.disable())
                 .cors(Customizer.withDefaults())
+                .headers(headers -> headers.frameOptions(frame -> frame.disable())) // Allow H2 Console frames
                 .authorizeHttpRequests(auth -> auth
+                        .requestMatchers("/h2-console/**").permitAll() // Allow H2 Console access
                         .requestMatchers("/auth/**").permitAll()
                         .requestMatchers("/dashboard/**").permitAll() // autorise l'accueil mobile (pas de token)
                         .requestMatchers("/courses/**").permitAll() // liste des cours

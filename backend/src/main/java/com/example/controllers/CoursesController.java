@@ -18,12 +18,11 @@ public class CoursesController {
     @Autowired
     private CoursesService coursesService;
 
-    /**
-     * Liste des cours pour l'écran "Mes Cours".
-     * Paramètres optionnels :
-     *  - status = all | in_progress | done
-     *  - q      = texte de recherche
-     */
+    @GetMapping("/all")
+    public List<CourseItemDto> getAllCourses() {
+        return coursesService.getAllCourses();
+    }
+
     @GetMapping(produces = MediaType.APPLICATION_JSON_VALUE + ";charset=UTF-8")
     public List<CourseItemDto> listCourses(
             @RequestParam(name = "status", required = false) String status,

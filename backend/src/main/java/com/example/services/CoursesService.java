@@ -1,6 +1,9 @@
 package com.example.services;
 
 import com.example.dto.CourseItemDto;
+import com.example.entities.learning.Courses;
+import com.example.repositories.CoursesRepository;
+import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
 import java.util.List;
@@ -9,6 +12,9 @@ import java.util.stream.Collectors;
 
 @Service
 public class CoursesService {
+
+    @Autowired
+    private CoursesRepository coursesRepository;
 
     private final List<CourseItemDto> seed = List.of(
             new CourseItemDto("Mathématiques Avancées", "Prof. Martin Dubois", "in_progress"),
@@ -27,6 +33,17 @@ public class CoursesService {
                     return c.getTitle().toLowerCase(Locale.ROOT).contains(q)
                             || c.getProfessor().toLowerCase(Locale.ROOT).contains(q);
                 })
+                .collect(Collectors.toList());
+    }
+
+    public List<CourseItemDto> getAllCourses() {
+        List<Courses> courses = coursesRepository.findAll();
+        return courses.stream()
+                .map(c -> new CourseItemDto(
+                        c.getCourseId().getCode_module() + " - " + c.getCourseId().getCode_presentation(),
+                        "Duration: " + c.getLength() + " days",
+                        "imported"
+                ))
                 .collect(Collectors.toList());
     }
 }
