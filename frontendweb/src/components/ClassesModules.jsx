@@ -52,10 +52,10 @@ const classes = [
   },
 ];
 
-export default function ClassesModules({ onNavigate, onSelectClass, onLogout }) {
+export default function ClassesModules({ onNavigate, onSelectClass, onLogout, user }) {
   return (
     <div className="flex">
-      <Sidebar currentPage="classes" onNavigate={onNavigate} onLogout={onLogout} />
+      <Sidebar currentPage="classes" onNavigate={onNavigate} onLogout={onLogout} user={user} />
 
       <main className="flex-1 p-8">
         {/* Header */}

@@ -6,10 +6,32 @@ import org.springframework.data.jpa.repository.JpaRepository;
 import org.springframework.data.jpa.repository.Query;
 import org.springframework.data.repository.query.Param;
 
+import java.util.List;
+
 public interface StudentVleRepository extends JpaRepository<StudentVle, StudentVleId> {
 
     @Query("select coalesce(sum(v.sum_click),0) from StudentVle v " +
             "where v.studentVleId.id_student = :studentId " +
             "and (:codePres is null or v.studentVleId.code_presentation = :codePres)")
     long sumClicksByStudent(@Param("studentId") int studentId, @Param("codePres") String codePresentation);
+
+    /**
+     * Sum all clicks across all students
+     */
+    @Query("SELECT COALESCE(SUM(sv.sum_click), 0) FROM StudentVle sv")
+    Long sumAllClicks();
+
+    /**
+     * Get total clicks per student
+     * Returns List<Object[]> where [0] = id_student, [1] = total_clicks
+     */
+    @Query("SELECT sv.studentVleId.id_student, SUM(sv.sum_click) FROM StudentVle sv GROUP BY sv.studentVleId.id_student")
+    List<Object[]> getTotalClicksPerStudent();
+
+    /**
+     * Get engagement metrics per student
+     */
+    @Query("SELECT sv.studentVleId.id_student, COUNT(sv), SUM(sv.sum_click), AVG(sv.sum_click) " +
+            "FROM StudentVle sv GROUP BY sv.studentVleId.id_student")
+    List<Object[]> getStudentEngagementMetrics();
 }

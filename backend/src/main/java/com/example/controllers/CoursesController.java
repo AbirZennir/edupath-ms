@@ -1,6 +1,7 @@
 package com.example.controllers;
 
 import com.example.dto.CourseItemDto;
+import com.example.entities.learning.Courses;
 import com.example.services.CoursesService;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.MediaType;
@@ -19,7 +20,7 @@ public class CoursesController {
     private CoursesService coursesService;
 
     @GetMapping("/all")
-    public List<CourseItemDto> getAllCourses() {
+    public List<Courses> getAllCourses() {
         return coursesService.getAllCourses();
     }
 

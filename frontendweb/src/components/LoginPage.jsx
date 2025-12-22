@@ -14,8 +14,13 @@ export default function LoginPage({ onLogin, onForgotPassword, onSignup }) {
     setLoading(true);
     try {
       const result = await api.login({ email, password });
-      if (result?.token) {
-        onLogin(result.token);
+      if (result?.token) {        // Extract user data from the result
+        const userData = {
+          name: result.name || (result.firstName && result.lastName ? `${result.firstName} ${result.lastName}` : email.split('@')[0]),
+          email: result.email || email,
+          role: result.role || 'Enseignant'
+        };
+        onLogin(result.token, userData);
       } else {
         setError('Réponse inattendue du serveur.');
       }
@@ -46,9 +51,9 @@ export default function LoginPage({ onLogin, onForgotPassword, onSignup }) {
         </div>
 
         {/* Formulaire de connexion */}
-        <div className="bg-white rounded-2xl shadow-lg p-8">
+        <div className="bg-white rounded-2xl shadow-lg p-8" >
           {error && (
-            <div className="mb-4 rounded-lg border border-[#FECACA] bg-[#FEF2F2] px-4 py-3 text-[#B91C1C]">
+            <div className="mb-4 rounded-lg border border-[#FECACA] bg-[#FEF2F2] px-4 py-3 text-[#B91C1C]" style={{ color: 'red' }}>
               {error}
             </div>
           )}

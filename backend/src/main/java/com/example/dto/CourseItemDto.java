@@ -10,5 +10,5 @@ import lombok.NoArgsConstructor;
 public class CourseItemDto {
     private String title;
     private String professor;
-    private String status; // in_progress | done
+    private String status;
 }

@@ -3,16 +3,6 @@ import { ArrowLeft, Users, TrendingUp, Activity, Clock } from 'lucide-react';
 import Sidebar from './Sidebar';
 import { LineChart, Line, XAxis, YAxis, CartesianGrid, Tooltip, ResponsiveContainer } from 'recharts';
 
-const students = [
-  { id: 1, nom: 'Dubois Alexandre', profil: 'Procrastinateur', reussite: 45, engagement: 52, avatar: 'AD' },
-  { id: 2, nom: 'Martin Sophie', profil: 'Assidu', reussite: 88, engagement: 92, avatar: 'MS' },
-  { id: 3, nom: 'Bernard Lucas', profil: 'En difficulté', reussite: 38, engagement: 45, avatar: 'BL' },
-  { id: 4, nom: 'Petit Emma', profil: 'Très performant', reussite: 95, engagement: 96, avatar: 'PE' },
-  { id: 5, nom: 'Roux Thomas', profil: 'Procrastinateur', reussite: 42, engagement: 48, avatar: 'RT' },
-  { id: 6, nom: 'Moreau Léa', profil: 'Assidu', reussite: 82, engagement: 85, avatar: 'ML' },
-  { id: 7, nom: 'Simon Hugo', profil: 'En difficulté', reussite: 48, engagement: 55, avatar: 'SH' },
-  { id: 8, nom: 'Laurent Chloé', profil: 'Très performant', reussite: 92, engagement: 94, avatar: 'LC' },
-];
 
 const studentTimelineData = [
   { semaine: 'S1', note: 12, connexions: 8 },
@@ -36,7 +26,7 @@ const profilColors = {
   'Très performant': 'bg-[#DBEAFE] text-[#2563EB]',
 };
 
-export default function ClassDetail({ onNavigate, classId, onLogout }) {
+export default function ClassDetail({ onNavigate, classId, onLogout, user }) {
   const [activeTab, setActiveTab] = useState('general');
   const [selectedStudent, setSelectedStudent] = useState(null);
 
@@ -48,7 +38,7 @@ export default function ClassDetail({ onNavigate, classId, onLogout }) {
 
   return (
     <div className="flex">
-      <Sidebar currentPage="classes" onNavigate={onNavigate} onLogout={onLogout} />
+      <Sidebar currentPage="classes" onNavigate={onNavigate} onLogout={onLogout} user={user} />
       
       <main className="flex-1 p-8">
         {/* Header */}

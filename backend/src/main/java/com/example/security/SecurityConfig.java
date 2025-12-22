@@ -32,6 +32,9 @@ public class SecurityConfig {
                         .requestMatchers("/classes/**").permitAll() // classes & modules (tests sans auth)
                         .requestMatchers("/at-risk/**").permitAll() // etudiants à risque (mock)
                         .requestMatchers("/assignments/**").permitAll() // liste des devoirs
+                        .requestMatchers("/api/dashboard/**").permitAll()
+                        .requestMatchers("/recommendations/**").permitAll()
+                        .requestMatchers("/api/auth/**").permitAll()
                         .requestMatchers("/grades/**").permitAll() // notes
                         .anyRequest().authenticated()
                 );

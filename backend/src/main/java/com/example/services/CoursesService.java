@@ -36,14 +36,7 @@ public class CoursesService {
                 .collect(Collectors.toList());
     }
 
-    public List<CourseItemDto> getAllCourses() {
-        List<Courses> courses = coursesRepository.findAll();
-        return courses.stream()
-                .map(c -> new CourseItemDto(
-                        c.getCourseId().getCode_module() + " - " + c.getCourseId().getCode_presentation(),
-                        "Duration: " + c.getLength() + " days",
-                        "imported"
-                ))
-                .collect(Collectors.toList());
+    public List<Courses> getAllCourses() {
+       return coursesRepository.findAll();
     }
 }

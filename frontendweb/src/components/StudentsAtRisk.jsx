@@ -1,121 +1,40 @@
+import { useEffect, useState } from 'react';
 import { AlertTriangle, Filter, Mail, ClipboardList } from 'lucide-react';
 import Sidebar from './Sidebar';
 
-const atRiskStudents = [
-  {
-    id: 1,
-    nom: 'Dubois Alexandre',
-    classe: 'L3 Informatique',
-    risque: 78,
-    niveau: 'elevé',
-    derniereConnexion: '2 jours',
-    modules: 'Algorithmes, Base de données',
-    avatar: 'AD',
-  },
-  {
-    id: 2,
-    nom: 'Martin Sophie',
-    classe: 'L2 Physique',
-    risque: 65,
-    niveau: 'moyen',
-    derniereConnexion: '1 jour',
-    modules: 'Mécanique',
-    avatar: 'MS',
-  },
-  {
-    id: 3,
-    nom: 'Bernard Lucas',
-    classe: 'L3 Informatique',
-    risque: 72,
-    niveau: 'elevé',
-    derniereConnexion: '3 jours',
-    modules: 'Algorithmes',
-    avatar: 'BL',
-  },
-  {
-    id: 4,
-    nom: 'Petit Emma',
-    classe: 'M1 Data Science',
-    risque: 58,
-    niveau: 'moyen',
-    derniereConnexion: '5 heures',
-    modules: 'Machine Learning',
-    avatar: 'PE',
-  },
-  {
-    id: 5,
-    nom: 'Roux Thomas',
-    classe: 'L3 Informatique',
-    risque: 81,
-    niveau: 'elevé',
-    derniereConnexion: '4 jours',
-    modules: 'Algorithmes, Réseaux',
-    avatar: 'RT',
-  },
-  {
-    id: 6,
-    nom: 'Moreau Léa',
-    classe: 'L2 Mathématiques',
-    risque: 62,
-    niveau: 'moyen',
-    derniereConnexion: '1 jour',
-    modules: 'Algèbre linéaire',
-    avatar: 'ML',
-  },
-  {
-    id: 7,
-    nom: 'Simon Hugo',
-    classe: 'L3 Informatique',
-    risque: 69,
-    niveau: 'moyen',
-    derniereConnexion: '2 jours',
-    modules: 'Base de données',
-    avatar: 'SH',
-  },
-  {
-    id: 8,
-    nom: 'Laurent Chloé',
-    classe: 'M2 IA',
-    risque: 75,
-    niveau: 'elevé',
-    derniereConnexion: '3 jours',
-    modules: 'Deep Learning',
-    avatar: 'LC',
-  },
-  {
-    id: 9,
-    nom: 'Fournier Louis',
-    classe: 'L3 Informatique',
-    risque: 67,
-    niveau: 'moyen',
-    derniereConnexion: '1 jour',
-    modules: 'Algorithmes',
-    avatar: 'FL',
-  },
-  {
-    id: 10,
-    nom: 'Michel Sarah',
-    classe: 'L2 Physique',
-    risque: 73,
-    niveau: 'elevé',
-    derniereConnexion: '5 jours',
-    modules: 'Mécanique, Thermodynamique',
-    avatar: 'MS',
-  },
-];
+export default function StudentsAtRisk({ onNavigate, onLogout, user }) {
+  const [atRiskStudents, setAtRiskStudents] = useState([]);
+  const [loading, setLoading] = useState(true);
+  const [error, setError] = useState(null);
 
-export default function StudentsAtRisk({ onNavigate, onLogout }) {
+  useEffect(() => {
+    fetch('http://localhost:8082/at-risk')
+      .then((res) => {
+        if (!res.ok) throw new Error('Erreur lors du chargement des étudiants');
+        return res.json();
+      })
+      .then((data) => {
+        setAtRiskStudents(data);
+        setLoading(false);
+      })
+      .catch((err) => {
+        setError(err.message);
+        setLoading(false);
+      });
+  }, []);
+
   const eleveCount = atRiskStudents.filter(s => s.niveau === 'elevé').length;
+
+  if (loading) return <div>Chargement...</div>;
+  if (error) return <div>Erreur : {error}</div>;
 
   return (
     <div className="flex">
-      <Sidebar currentPage="at-risk" onNavigate={onNavigate} onLogout={onLogout} />
-      
+      <Sidebar currentPage="at-risk" onNavigate={onNavigate} onLogout={onLogout} user={user} />
       <main className="flex-1 p-8">
         {/* Header */}
         <div className="mb-8">
           <h1 className="text-[#1E293B] mb-6">Étudiants à risque</h1>
-          
           {/* Bandeau d'alerte */}
           <div className="bg-[#FEE2E2] border-l-4 border-[#EF4444] p-6 rounded-lg mb-6">
             <div className="flex items-start gap-4">
@@ -131,7 +50,6 @@ export default function StudentsAtRisk({ onNavigate, onLogout }) {
               </div>
             </div>
           </div>
-
           {/* Filtres */}
           <div className="flex gap-4 mb-6">
             <button className="flex items-center gap-2 px-6 py-3 bg-white border border-[#E2E8F0] rounded-lg text-[#334155] hover:bg-[#F8FAFC] transition">
@@ -146,7 +64,6 @@ export default function StudentsAtRisk({ onNavigate, onLogout }) {
             </button>
           </div>
         </div>
-
         {/* Liste des étudiants */}
         <div className="grid gap-4">
           {atRiskStudents.map((student) => (
@@ -162,7 +79,6 @@ export default function StudentsAtRisk({ onNavigate, onLogout }) {
                   <div className="w-12 h-12 rounded-full bg-[#2563EB] flex items-center justify-center text-white">
                     {student.avatar}
                   </div>
-
                   {/* Infos étudiant */}
                   <div className="flex-1">
                     <div className="flex items-center gap-3 mb-2">
@@ -186,7 +102,6 @@ export default function StudentsAtRisk({ onNavigate, onLogout }) {
                     </div>
                   </div>
                 </div>
-
                 {/* Probabilité d'échec */}
                 <div className="text-right ml-6">
                   <p className="text-[#94A3B8] mb-2">Probabilité d&apos;échec</p>
@@ -203,7 +118,6 @@ export default function StudentsAtRisk({ onNavigate, onLogout }) {
                   </div>
                 </div>
               </div>
-
               {/* Actions */}
               <div className="flex gap-3 mt-4 pt-4 border-t border-[#F1F5F9]">
                 <button className="flex items-center gap-2 px-4 py-2 bg-[#2563EB] text-white rounded-lg hover:bg-[#1E40AF] transition">
@@ -225,5 +139,3 @@ export default function StudentsAtRisk({ onNavigate, onLogout }) {
     </div>
   );
 }
-
-

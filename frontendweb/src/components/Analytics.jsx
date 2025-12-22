@@ -37,10 +37,10 @@ const engagementTrendData = [
   { semaine: 'S8', engagement: 85, reussite: 87 },
 ];
 
-export default function Analytics({ onNavigate, onLogout }) {
+export default function Analytics({ onNavigate, onLogout, user }) {
   return (
     <div className="flex">
-      <Sidebar currentPage="analytics" onNavigate={onNavigate} onLogout={onLogout} />
+      <Sidebar currentPage="analytics" onNavigate={onNavigate} onLogout={onLogout} user={user} />
       
       <main className="flex-1 p-8">
         {/* Header */}
