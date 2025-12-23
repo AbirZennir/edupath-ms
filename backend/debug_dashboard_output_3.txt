@@ -1,0 +1,50 @@
+[INFO] Scanning for projects...
+[INFO] 
+[INFO] ------------------------< com.example:backend >-------------------------
+[INFO] Building Application 0.0.1-SNAPSHOT
+[INFO]   from pom.xml
+[INFO] --------------------------------[ jar ]---------------------------------
+[INFO] 
+[INFO] --- resources:3.3.1:resources (default-resources) @ backend ---
+[INFO] Copying 1 resource from src\main\resources to target\classes
+[INFO] Copying 0 resource from src\main\resources to target\classes
+[INFO] 
+[INFO] --- compiler:3.14.1:compile (default-compile) @ backend ---
+[INFO] Recompiling the module because of changed source code.
+[INFO] Compiling 86 source files with javac [debug parameters release 17] to target\classes
+[WARNING] /D:/Adam/projet-architecture-pfa/edupath-ms/backend/src/main/java/com/example/entities/Professeur.java:[11,1] Generating equals/hashCode implementation but without a call to superclass, even though this class does not extend java.lang.Object. If this is intentional, add '@EqualsAndHashCode(callSuper=false)' to your type.
+[WARNING] /D:/Adam/projet-architecture-pfa/edupath-ms/backend/src/main/java/com/example/entities/Etudiant.java:[11,1] Generating equals/hashCode implementation but without a call to superclass, even though this class does not extend java.lang.Object. If this is intentional, add '@EqualsAndHashCode(callSuper=false)' to your type.
+[INFO] /D:/Adam/projet-architecture-pfa/edupath-ms/backend/src/main/java/com/example/services/AtRiskStudentsService.java: D:\Adam\projet-architecture-pfa\edupath-ms\backend\src\main\java\com\example\services\AtRiskStudentsService.java uses or overrides a deprecated API.
+[INFO] /D:/Adam/projet-architecture-pfa/edupath-ms/backend/src/main/java/com/example/services/AtRiskStudentsService.java: Recompile with -Xlint:deprecation for details.
+[INFO] 
+[INFO] --- resources:3.3.1:testResources (default-testResources) @ backend ---
+[INFO] skip non existing resourceDirectory D:\Adam\projet-architecture-pfa\edupath-ms\backend\src\test\resources
+[INFO] 
+[INFO] --- compiler:3.14.1:testCompile (default-testCompile) @ backend ---
+[INFO] Recompiling the module because of changed dependency.
+[INFO] Compiling 3 source files with javac [debug parameters release 17] to target\test-classes
+[INFO] 
+[INFO] --- surefire:3.5.4:test (default-test) @ backend ---
+[INFO] Using auto detected provider org.apache.maven.surefire.junitplatform.JUnitPlatformProvider
+[INFO] 
+[INFO] -------------------------------------------------------
+[INFO]  T E S T S
+[INFO] -------------------------------------------------------
+[INFO] Running com.example.services.DebugDashboardTest
+DEBUG_DASHBOARD_RAW_START
+{"stats":{"totalStudents":964,"studentsAtRisk":328,"successRate":65,"engagementAvg":5,"resourcesConsulted":4844},"atRiskStudents":[{"idStudent":79378,"name":"Student 79378","className":"BBB 2013B","riskScore":100,"lastConnection":"N/A","status":"critical"},{"idStudent":27891,"name":"Student 27891","className":"BBB 2013B","riskScore":85,"lastConnection":"N/A","status":"critical"},{"idStudent":126411,"name":"Student 126411","className":"BBB 2013B","riskScore":85,"lastConnection":"N/A","status":"critical"},{"idStudent":92993,"name":"Student 92993","className":"BBB 2013B","riskScore":74,"lastConnection":"N/A","status":"critical"},{"idStudent":23629,"name":"Student 23629","className":"BBB 2013B","riskScore":65,"lastConnection":"N/A","status":"warning"},{"idStudent":34229,"name":"Student 34229","className":"BBB 2013B","riskScore":65,"lastConnection":"N/A","status":"warning"},{"idStudent":122524,"name":"Student 122524","className":"BBB 2013B","riskScore":65,"lastConnection":"N/A","status":"wa
+rning"},{"idStudent":153704,"name":"Student 153704","className":"BBB 2013B","riskScore":60,"lastConnection":"N/A","status":"warning"},{"idStudent":155735,"name":"Student 155735","className":"BBB 2013B","riskScore":60,"lastConnection":"N/A","status":"warning"},{"idStudent":161678,"name":"Student 161678","className":"BBB 2013B","riskScore":60,"lastConnection":"N/A","status":"warning"}],"profileDistribution":[{"name":"Engagés","value":636,"color":"#22C55E"},{"name":"Moyens","value":169,"color":"#F97316"},{"name":"À risque","value":159,"color":"#EF4444"}],"evolution":[{"week":"Pre-S1","success":0,"engagement":4844},{"week":"S0","success":0,"engagement":0},{"week":"S0","success":77,"engagement":0},{"week":"S1","success":71,"engagement":0},{"week":"S2","success":70,"engagement":0},{"week":"S3","success":64,"engagement":0},{"week":"S4","success":61,"engagement":0},{"week":"S5","success":66,"engagement":0},{"week":"S6","success":69,"engagement":0},{"week":"S7","success":66,"engagement":0},{"we
+ek":"S8","success":66,"engagement":0},{"week":"S9","success":64,"engagement":0},{"week":"S10","success":51,"engagement":0},{"week":"S11","success":37,"engagement":0},{"week":"S12","success":70,"engagement":0},{"week":"S13","success":57,"engagement":0},{"week":"S14","success":67,"engagement":0},{"week":"S15","success":72,"engagement":0},{"week":"S16","success":71,"engagement":0},{"week":"S17","success":60,"engagement":0},{"week":"S18","success":63,"engagement":0},{"week":"S19","success":71,"engagement":0},{"week":"S20","success":78,"engagement":0}]}
+DEBUG_DASHBOARD_RAW_END
+[INFO] Tests run: 1, Failures: 0, Errors: 0, Skipped: 0, Time elapsed: 18.74 s -- in com.example.services.DebugDashboardTest
+[INFO] 
+[INFO] Results:
+[INFO] 
+[INFO] Tests run: 1, Failures: 0, Errors: 0, Skipped: 0
+[INFO] 
+[INFO] ------------------------------------------------------------------------
+[INFO] BUILD SUCCESS
+[INFO] ------------------------------------------------------------------------
+[INFO] Total time:  27.640 s
+[INFO] Finished at: 2025-12-23T00:53:37+01:00
+[INFO] ------------------------------------------------------------------------

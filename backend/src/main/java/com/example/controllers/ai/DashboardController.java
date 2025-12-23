@@ -23,4 +23,3 @@ public class DashboardController {
         return ResponseEntity.ok(analytics);
     }
 }
-

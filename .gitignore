@@ -1,2 +1,12 @@
 # Ignore all files in backend/data/
 backend/data/
+.env
+
+# Ignore build output
+target/
+**/target/
+*.class
+
+# Python
+__pycache__/
+*.pyc

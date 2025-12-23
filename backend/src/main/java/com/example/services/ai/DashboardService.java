@@ -22,4 +22,3 @@ public class DashboardService {
         return restTemplate.getForObject(url, DashboardAnalyticsDTO.class);
     }
 }
-

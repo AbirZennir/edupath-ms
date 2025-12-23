@@ -13,7 +13,7 @@ import java.util.List;
 import java.util.Map;
 
 @RestController
-@RequestMapping("/at-risk")
+@RequestMapping("/at-risk-students")
 public class AtRiskController {
 
     @Autowired
@@ -24,3 +24,4 @@ public class AtRiskController {
         return ResponseEntity.ok(atRiskStudentsService.getAtRiskStudents());
     }
 }
+

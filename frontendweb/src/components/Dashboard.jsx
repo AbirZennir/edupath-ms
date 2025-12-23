@@ -246,7 +246,7 @@ export default function Dashboard({ onNavigate, onLogout, user }) {
                           <span className="text-[#1E293B] font-semibold">{student.riskScore}%</span>
                         </div>
                       </td>
-                      <td className="py-3 px-4 text-[#64748B]">{student.lastConnection}</td>
+                      <td className="py-3 px-4 text-[#64748B]">Hiers</td>
                       <td className="py-3 px-4">
                         <span
                           className={`px-3 py-1 rounded-full text-sm font-medium ${

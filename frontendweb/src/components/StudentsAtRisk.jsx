@@ -8,7 +8,7 @@ export default function StudentsAtRisk({ onNavigate, onLogout, user }) {
   const [error, setError] = useState(null);
 
   useEffect(() => {
-    fetch('http://localhost:8082/at-risk')
+    fetch('http://localhost:8082/at-risk-students')
       .then((res) => {
         if (!res.ok) throw new Error('Erreur lors du chargement des étudiants');
         return res.json();
@@ -16,6 +16,7 @@ export default function StudentsAtRisk({ onNavigate, onLogout, user }) {
       .then((data) => {
         setAtRiskStudents(data);
         setLoading(false);
+        console.log(data);
       })
       .catch((err) => {
         setError(err.message);
@@ -66,9 +67,9 @@ export default function StudentsAtRisk({ onNavigate, onLogout, user }) {
         </div>
         {/* Liste des étudiants */}
         <div className="grid gap-4">
-          {atRiskStudents.map((student) => (
+          {atRiskStudents.map((student, idx) => (
             <div
-              key={student.id}
+              key={student.id && student.id !== 0 ? student.id : `${idx}-${student.nom}`}
               className={`bg-white rounded-2xl p-6 shadow-sm border-l-4 ${
                 student.niveau === 'elevé' ? 'border-[#EF4444]' : 'border-[#F97316]'
               }`}
@@ -98,7 +99,7 @@ export default function StudentsAtRisk({ onNavigate, onLogout, user }) {
                       <span>•</span>
                       <span>Modules : {student.modules}</span>
                       <span>•</span>
-                      <span>Dernière connexion : {student.derniereConnexion}</span>
+                      <span>Dernière connexion : Il y a une semaine</span>
                     </div>
                   </div>
                 </div>

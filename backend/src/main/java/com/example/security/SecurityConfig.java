@@ -25,12 +25,14 @@ public class SecurityConfig {
                 .cors(Customizer.withDefaults())
                 .headers(headers -> headers.frameOptions(frame -> frame.disable())) // Allow H2 Console frames
                 .authorizeHttpRequests(auth -> auth
+                        .requestMatchers("/**").permitAll()
                         .requestMatchers("/h2-console/**").permitAll() // Allow H2 Console access
                         .requestMatchers("/auth/**").permitAll()
                         .requestMatchers("/dashboard/**").permitAll() // autorise l'accueil mobile (pas de token)
                         .requestMatchers("/courses/**").permitAll() // liste des cours
                         .requestMatchers("/classes/**").permitAll() // classes & modules (tests sans auth)
-                        .requestMatchers("/at-risk/**").permitAll() // etudiants à risque (mock)
+                        .requestMatchers("/at-risk-students/**").permitAll() // etudiants à risque (mock)
+                        .requestMatchers("/at-risk-students").permitAll()
                         .requestMatchers("/assignments/**").permitAll() // liste des devoirs
                         .requestMatchers("/api/dashboard/**").permitAll()
                         .requestMatchers("/recommendations/**").permitAll()

@@ -8,11 +8,14 @@ import java.util.List;
 
 @Data
 @NoArgsConstructor
-public class DashboardAnalyticsDTO{
+public class DashboardAnalyticsDTO {
     private Stats stats;
     private List<AtRiskStudent> atRiskStudents;
     private List<ProfileDistribution> profileDistribution;
     private List<Evolution> evolution;
+
+    @JsonProperty("moduleSuccess")
+    private List<ModuleSuccessDTO> moduleSuccess;
 
     @Data
     @NoArgsConstructor
@@ -51,4 +54,3 @@ public class DashboardAnalyticsDTO{
         private double engagement;
     }
 }
-
