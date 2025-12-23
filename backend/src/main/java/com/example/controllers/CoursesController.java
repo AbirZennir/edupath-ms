@@ -5,10 +5,7 @@ import com.example.entities.learning.Courses;
 import com.example.services.CoursesService;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.MediaType;
-import org.springframework.web.bind.annotation.GetMapping;
-import org.springframework.web.bind.annotation.RequestMapping;
-import org.springframework.web.bind.annotation.RequestParam;
-import org.springframework.web.bind.annotation.RestController;
+import org.springframework.web.bind.annotation.*;
 
 import java.util.List;
 
@@ -27,8 +24,15 @@ public class CoursesController {
     @GetMapping(produces = MediaType.APPLICATION_JSON_VALUE + ";charset=UTF-8")
     public List<CourseItemDto> listCourses(
             @RequestParam(name = "status", required = false) String status,
-            @RequestParam(name = "q", required = false) String search
-    ) {
+            @RequestParam(name = "q", required = false) String search) {
         return coursesService.listCourses(status, search);
+    }
+
+    @GetMapping("/student/{studentId}")
+    public List<CourseItemDto> getStudentCourses(
+            @PathVariable Integer studentId,
+            @RequestParam(name = "status", required = false) String status,
+            @RequestParam(name = "q", required = false) String search) {
+        return coursesService.getStudentCourses(studentId, status, search);
     }
 }

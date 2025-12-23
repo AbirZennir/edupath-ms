@@ -9,10 +9,10 @@ class WelcomePage extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     final theme = Theme.of(context);
-    const primary = Color(0xFF2563EB);
+    final primary = theme.colorScheme.primary;
 
     return Scaffold(
-      backgroundColor: const Color(0xFFF5F7FB),
+      backgroundColor: theme.scaffoldBackgroundColor,
       body: SafeArea(
         child: Center(
           child: ConstrainedBox(
@@ -22,7 +22,7 @@ class WelcomePage extends StatelessWidget {
               child: Column(
                 mainAxisAlignment: MainAxisAlignment.center,
                 children: [
-                  const Icon(Icons.school, size: 72, color: primary),
+                  Icon(Icons.school, size: 72, color: primary),
                   const SizedBox(height: 16),
                   Text(
                     "EduPath",
@@ -75,12 +75,12 @@ class WelcomePage extends StatelessWidget {
                         );
                       },
                       style: OutlinedButton.styleFrom(
-                        side: const BorderSide(color: primary, width: 1.4),
+                        side: BorderSide(color: primary, width: 1.4),
                         shape: RoundedRectangleBorder(
                           borderRadius: BorderRadius.circular(12),
                         ),
                       ),
-                      child: const Text(
+                      child: Text(
                         "Créer un compte",
                         style: TextStyle(color: primary),
                       ),

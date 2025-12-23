@@ -1,2 +1,7 @@
 # Ignore all files in backend/data/
 backend/data/
+
+# Python
+__pycache__/
+*.py[cod]
+*$py.class

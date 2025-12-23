@@ -1,5 +1,6 @@
 import 'package:flutter/material.dart';
 
+import 'package:shared_preferences/shared_preferences.dart';
 import '../api_client.dart';
 
 class RegisterPage extends StatefulWidget {
@@ -18,8 +19,9 @@ class _RegisterPageState extends State<RegisterPage> {
   final _nameController = TextEditingController();
   final ApiClient _apiClient = ApiClient();
 
-  bool _loading = false;
-  String? _errorMessage;
+  bool _loading = false; // Restored
+  String? _errorMessage; // Restored
+  String _selectedMajor = 'Informatique';
 
   Future<void> _submit() async {
     if (!_formKey.currentState!.validate()) return;
@@ -34,11 +36,19 @@ class _RegisterPageState extends State<RegisterPage> {
         email: _emailController.text.trim(),
         password: _passwordController.text,
       );
+
+      // Store selected major locally
+      final prefs = await SharedPreferences.getInstance();
+      await prefs.setString('user_major', _selectedMajor);
+
       if (!mounted) return;
       ScaffoldMessenger.of(context).showSnackBar(
-        const SnackBar(content: Text('Compte créé, vous pouvez vous connecter')),
+        const SnackBar(content: Text('Compte créé avec succès ! Veuillez vous connecter.')),
       );
+      
+      // Redirect to Login Page instead of App
       Navigator.pushReplacementNamed(context, '/login');
+
     } catch (e) {
       if (!mounted) return;
       setState(() {
@@ -129,6 +139,7 @@ class _RegisterPageState extends State<RegisterPage> {
                 ),
                 const SizedBox(height: 16),
                 DropdownButtonFormField<String>(
+                  value: _selectedMajor,
                   items: const [
                     DropdownMenuItem(
                       value: 'Informatique',
@@ -143,7 +154,9 @@ class _RegisterPageState extends State<RegisterPage> {
                       child: Text('Physique'),
                     ),
                   ],
-                  onChanged: (_) {},
+                  onChanged: (v) {
+                    if (v != null) setState(() => _selectedMajor = v);
+                  },
                   decoration: const InputDecoration(
                     hintText: 'Classe ou filière',
                   ),

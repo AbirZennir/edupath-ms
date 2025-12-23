@@ -1,6 +1,7 @@
 import 'package:flutter/material.dart';
 
 import '../api_client.dart';
+import 'reset_password_page.dart';
 
 class LoginPage extends StatefulWidget {
   const LoginPage({super.key});
@@ -66,7 +67,7 @@ class _LoginPageState extends State<LoginPage> {
             child: Column(
               mainAxisAlignment: MainAxisAlignment.center,
               children: [
-                const Icon(Icons.school, size: 64, color: Color(0xFF2563EB)),
+                Icon(Icons.school, size: 64, color: theme.colorScheme.primary),
                 const SizedBox(height: 12),
                 Text(
                   'EduPath',
@@ -134,7 +135,14 @@ class _LoginPageState extends State<LoginPage> {
                 ),
                 const SizedBox(height: 16),
                 TextButton(
-                  onPressed: () {},
+                  onPressed: () {
+                    Navigator.push(
+                      context,
+                      MaterialPageRoute(
+                        builder: (_) => const ResetPasswordPage(),
+                      ),
+                    );
+                  },
                   child: const Text('Mot de passe oublié ?'),
                 ),
                 const SizedBox(height: 16),
@@ -160,10 +168,10 @@ class _LoginPageState extends State<LoginPage> {
                                 context,
                                 '/register',
                               ),
-                      child: const Text(
+                      child: Text(
                         'Créer un compte',
                         style: TextStyle(
-                          color: Color(0xFF2563EB),
+                          color: theme.colorScheme.primary,
                           fontWeight: FontWeight.w600,
                         ),
                       ),

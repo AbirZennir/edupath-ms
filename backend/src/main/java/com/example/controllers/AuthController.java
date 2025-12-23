@@ -32,14 +32,14 @@ public class AuthController {
     private PasswordEncoder passwordEncoder;
 
     @PostMapping("/register")
-    public ResponseEntity<AuthResponse> register(@RequestBody RegisterRequest request){
+    public ResponseEntity<AuthResponse> register(@RequestBody RegisterRequest request) {
         Utilisateur created = utilisateurService.register(request);
         String token = jwtUtils.generateToken(created.getEmail());
-        return ResponseEntity.status(HttpStatus.CREATED).body(new AuthResponse(token));
+        return ResponseEntity.status(HttpStatus.CREATED).body(new AuthResponse(token, created.getId()));
     }
 
     @PostMapping("/login")
-    public ResponseEntity<AuthResponse> login(@RequestBody LoginRequest loginData){
+    public ResponseEntity<AuthResponse> login(@RequestBody LoginRequest loginData) {
         String email = loginData.getEmail();
         String password = loginData.getPassword();
         Utilisateur utilisateur = utilisateurService.findByEmail(email);
@@ -47,7 +47,7 @@ public class AuthController {
             return ResponseEntity.status(HttpStatus.UNAUTHORIZED).build();
         }
         String token = jwtUtils.generateToken(email);
-        return ResponseEntity.ok(new AuthResponse(token));
+        return ResponseEntity.ok(new AuthResponse(token, utilisateur.getId()));
     }
 
     @ExceptionHandler(RuntimeException.class)
