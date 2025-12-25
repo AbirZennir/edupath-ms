@@ -1,21 +1,35 @@
 package com.example.dto;
 
+import com.fasterxml.jackson.annotation.JsonAlias;
 import lombok.AllArgsConstructor;
 import lombok.Data;
 import lombok.NoArgsConstructor;
-
-import java.util.List;
 
 @Data
 @NoArgsConstructor
 @AllArgsConstructor
 public class AtRiskStudentDto {
-    private int id;
+    @JsonAlias({ "id", "Id", "student_id", "studentId", "idStudent" })
+    private Integer id;
+
+    @JsonAlias({ "nom", "name", "fullname", "full_name", "username" })
     private String nom;
-    private String avatar;          // initiales
-    private String classe;          // ex: L3 Informatique
-    private List<String> modules;   // ex: ["Algorithmes", "Base de données"]
-    private String niveau;          // elevé | moyen
-    private String derniereConnexion; // ex: "2 jours"
-    private int risque;             // probabilité d'échec en %
+
+    @JsonAlias({ "classe", "class", "className", "classe_name" })
+    private String classe;
+
+    @JsonAlias({ "modules", "module", "modules_list", "modulesList" })
+    private String modules;
+
+    @JsonAlias({ "risque", "risk", "score", "risk_score", "riskScore" })
+    private Integer risque;
+
+    @JsonAlias({ "derniereConnexion", "lastConnection", "last_seen", "lastSeen" })
+    private String derniereConnexion;
+
+    @JsonAlias({ "niveau", "level", "status" })
+    private String niveau;
+
+    @JsonAlias({ "avatar", "photo", "image", "avatar_url" })
+    private String avatar;
 }

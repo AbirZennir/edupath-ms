@@ -1,121 +1,94 @@
-import { AlertTriangle, Filter, Mail, ClipboardList } from 'lucide-react';
+import { useEffect, useState } from 'react';
+import { AlertTriangle, Filter, Mail, ClipboardList, X, PlayCircle, FileText, Activity, Sparkles } from 'lucide-react';
 import Sidebar from './Sidebar';
+import { api } from '../api/client';
 
-const atRiskStudents = [
-  {
-    id: 1,
-    nom: 'Dubois Alexandre',
-    classe: 'L3 Informatique',
-    risque: 78,
-    niveau: 'elevé',
-    derniereConnexion: '2 jours',
-    modules: 'Algorithmes, Base de données',
-    avatar: 'AD',
-  },
-  {
-    id: 2,
-    nom: 'Martin Sophie',
-    classe: 'L2 Physique',
-    risque: 65,
-    niveau: 'moyen',
-    derniereConnexion: '1 jour',
-    modules: 'Mécanique',
-    avatar: 'MS',
-  },
-  {
-    id: 3,
-    nom: 'Bernard Lucas',
-    classe: 'L3 Informatique',
-    risque: 72,
-    niveau: 'elevé',
-    derniereConnexion: '3 jours',
-    modules: 'Algorithmes',
-    avatar: 'BL',
-  },
-  {
-    id: 4,
-    nom: 'Petit Emma',
-    classe: 'M1 Data Science',
-    risque: 58,
-    niveau: 'moyen',
-    derniereConnexion: '5 heures',
-    modules: 'Machine Learning',
-    avatar: 'PE',
-  },
-  {
-    id: 5,
-    nom: 'Roux Thomas',
-    classe: 'L3 Informatique',
-    risque: 81,
-    niveau: 'elevé',
-    derniereConnexion: '4 jours',
-    modules: 'Algorithmes, Réseaux',
-    avatar: 'RT',
-  },
-  {
-    id: 6,
-    nom: 'Moreau Léa',
-    classe: 'L2 Mathématiques',
-    risque: 62,
-    niveau: 'moyen',
-    derniereConnexion: '1 jour',
-    modules: 'Algèbre linéaire',
-    avatar: 'ML',
-  },
-  {
-    id: 7,
-    nom: 'Simon Hugo',
-    classe: 'L3 Informatique',
-    risque: 69,
-    niveau: 'moyen',
-    derniereConnexion: '2 jours',
-    modules: 'Base de données',
-    avatar: 'SH',
-  },
-  {
-    id: 8,
-    nom: 'Laurent Chloé',
-    classe: 'M2 IA',
-    risque: 75,
-    niveau: 'elevé',
-    derniereConnexion: '3 jours',
-    modules: 'Deep Learning',
-    avatar: 'LC',
-  },
-  {
-    id: 9,
-    nom: 'Fournier Louis',
-    classe: 'L3 Informatique',
-    risque: 67,
-    niveau: 'moyen',
-    derniereConnexion: '1 jour',
-    modules: 'Algorithmes',
-    avatar: 'FL',
-  },
-  {
-    id: 10,
-    nom: 'Michel Sarah',
-    classe: 'L2 Physique',
-    risque: 73,
-    niveau: 'elevé',
-    derniereConnexion: '5 jours',
-    modules: 'Mécanique, Thermodynamique',
-    avatar: 'MS',
-  },
-];
+export default function StudentsAtRisk({ onNavigate, onLogout, user }) {
+  const [atRiskStudents, setAtRiskStudents] = useState([]);
+  const [loading, setLoading] = useState(true);
+  const [error, setError] = useState(null);
 
-export default function StudentsAtRisk({ onNavigate, onLogout }) {
-  const eleveCount = atRiskStudents.filter(s => s.niveau === 'elevé').length;
+  // RecoBuilder State
+  const [showRecoModal, setShowRecoModal] = useState(false);
+  const [recoData, setRecoData] = useState(null);
+  const [loadingReco, setLoadingReco] = useState(false);
+  const [selectedStudentForReco, setSelectedStudentForReco] = useState(null);
+
+  useEffect(() => {
+    fetch('http://localhost:8888/ai/at-risk-students')
+      .then((res) => {
+        if (!res.ok) throw new Error('Erreur lors du chargement des étudiants');
+        return res.json();
+      })
+      .then((data) => {
+        setAtRiskStudents(data);
+        setLoading(false);
+      })
+      .catch((err) => {
+        setError(err.message);
+        setLoading(false);
+      });
+  }, []);
+
+  const [selectedRisk, setSelectedRisk] = useState('all');
+
+  const eleveCount = atRiskStudents.filter(s => s.status === 'critical').length;
+  const moyenCount = atRiskStudents.length - eleveCount;
+
+  const filteredStudents = selectedRisk === 'all'
+    ? atRiskStudents
+    : selectedRisk === 'elevé'
+      ? atRiskStudents.filter(student => student.status === 'critical')
+      : atRiskStudents.filter(student => student.status !== 'critical');
+
+  const handleFilterClick = (riskLevel) => {
+    if (selectedRisk === riskLevel) {
+      setSelectedRisk('all');
+    } else {
+      setSelectedRisk(riskLevel);
+    }
+  };
+
+  const handleShowReco = async (student) => {
+    setSelectedStudentForReco(student);
+    setShowRecoModal(true);
+    setLoadingReco(true);
+
+
+    const score = student.riskScore / 100;
+
+    try {
+
+      const token = localStorage.getItem('authToken');
+      const data = await api.getRecommendations({
+        riskScore: score,
+        studentId: student.idStudent,
+        codeModule: "AAA",
+        codePresentation: "2013J"
+      }, token);
+      setRecoData(data);
+    } catch (e) {
+      console.error("Failed to load recommendations", e);
+    } finally {
+      setLoadingReco(false);
+    }
+  };
+
+  const closeRecoModal = () => {
+    setShowRecoModal(false);
+    setRecoData(null);
+  }
+
+  if (loading) return <div>Chargement...</div>;
+  if (error) return <div>Erreur : {error}</div>;
 
   return (
-    <div className="flex">
-      <Sidebar currentPage="at-risk" onNavigate={onNavigate} onLogout={onLogout} />
-      
+    <div className="flex relative">
+      <Sidebar currentPage="at-risk" onNavigate={onNavigate} onLogout={onLogout} user={user} />
       <main className="flex-1 p-8">
         {/* Header */}
         <div className="mb-8">
           <h1 className="text-[#1E293B] mb-6">Étudiants à risque</h1>
-          
           {/* Bandeau d'alerte */}
           <div className="bg-[#FEE2E2] border-l-4 border-[#EF4444] p-6 rounded-lg mb-6">
             <div className="flex items-start gap-4">
@@ -125,96 +98,96 @@ export default function StudentsAtRisk({ onNavigate, onLogout }) {
               <div>
                 <h3 className="text-[#1E293B] mb-1">Attention prioritaire requise</h3>
                 <p className="text-[#64748B]">
-                  {eleveCount} étudiants nécessitent une intervention immédiate. 
-                  {atRiskStudents.length - eleveCount} autres étudiants présentent un risque modéré.
+                  {eleveCount} étudiants nécessitent une intervention immédiate.
+                  {moyenCount} autres étudiants présentent un risque modéré.
                 </p>
               </div>
             </div>
           </div>
-
           {/* Filtres */}
           <div className="flex gap-4 mb-6">
-            <button className="flex items-center gap-2 px-6 py-3 bg-white border border-[#E2E8F0] rounded-lg text-[#334155] hover:bg-[#F8FAFC] transition">
-              <Filter className="w-5 h-5" />
-              Tous les niveaux
-            </button>
-            <button className="px-6 py-3 bg-[#FEE2E2] text-[#EF4444] rounded-lg hover:bg-[#FECACA] transition">
+            <button
+              onClick={() => handleFilterClick('elevé')}
+              className={`px-6 py-3 rounded-lg transition ${selectedRisk === 'elevé'
+                ? 'bg-[#EF4444] text-white ring-2 ring-offset-2 ring-[#EF4444]'
+                : 'bg-[#FEE2E2] text-[#EF4444] hover:bg-[#FECACA]'
+                }`}
+            >
               Risque élevé ({eleveCount})
             </button>
-            <button className="px-6 py-3 bg-white border border-[#E2E8F0] text-[#64748B] rounded-lg hover:bg-[#F8FAFC] transition">
-              Risque moyen ({atRiskStudents.length - eleveCount})
+            <button
+              onClick={() => handleFilterClick('moyen')}
+              className={`px-6 py-3 rounded-lg transition ${selectedRisk === 'moyen'
+                ? 'bg-[#F97316] text-white ring-2 ring-offset-2 ring-[#F97316]'
+                : 'bg-white border border-[#E2E8F0] text-[#64748B] hover:bg-[#F8FAFC]'
+                }`}
+            >
+              Risque moyen ({moyenCount})
             </button>
           </div>
         </div>
-
         {/* Liste des étudiants */}
         <div className="grid gap-4">
-          {atRiskStudents.map((student) => (
+          {filteredStudents.map((student, idx) => (
             <div
-              key={student.id}
-              className={`bg-white rounded-2xl p-6 shadow-sm border-l-4 ${
-                student.niveau === 'elevé' ? 'border-[#EF4444]' : 'border-[#F97316]'
-              }`}
+              key={student.idStudent || idx}
+              className={`bg-white rounded-2xl p-6 shadow-sm border-l-4 ${student.status === 'critical' ? 'border-[#EF4444]' : 'border-[#F97316]'
+                }`}
             >
               <div className="flex items-start justify-between">
                 <div className="flex items-center gap-4 flex-1">
                   {/* Avatar */}
                   <div className="w-12 h-12 rounded-full bg-[#2563EB] flex items-center justify-center text-white">
-                    {student.avatar}
+                    {student.avatar || "A"}
                   </div>
-
                   {/* Infos étudiant */}
                   <div className="flex-1">
                     <div className="flex items-center gap-3 mb-2">
-                      <h3 className="text-[#1E293B]">{student.nom}</h3>
+                      <h3 className="text-[#1E293B]">{student.name}</h3>
                       <span
-                        className={`px-3 py-1 rounded-full ${
-                          student.niveau === 'elevé'
-                            ? 'bg-[#FEE2E2] text-[#EF4444]'
-                            : 'bg-[#FED7AA] text-[#F97316]'
-                        }`}
+                        className={`px-3 py-1 rounded-full ${student.status === 'critical'
+                          ? 'bg-[#FEE2E2] text-[#EF4444]'
+                          : 'bg-[#FED7AA] text-[#F97316]'
+                          }`}
                       >
-                        Risque {student.niveau}
+                        Risque {student.status === 'critical' ? 'élevé' : 'moyen'}
                       </span>
                     </div>
                     <div className="flex items-center gap-6 text-[#64748B]">
-                      <span>{student.classe}</span>
+                      <span>{student.className}</span>
                       <span>•</span>
-                      <span>Modules : {student.modules}</span>
+                      <span>Modules : {student.className.split(' ')[0]}</span>
                       <span>•</span>
-                      <span>Dernière connexion : {student.derniereConnexion}</span>
+                      <span>Dernière connexion : {student.lastConnection}</span>
                     </div>
                   </div>
                 </div>
-
                 {/* Probabilité d'échec */}
                 <div className="text-right ml-6">
                   <p className="text-[#94A3B8] mb-2">Probabilité d&apos;échec</p>
                   <div className="flex items-center gap-3">
                     <div className="w-32 bg-[#E2E8F0] rounded-full h-3">
                       <div
-                        className={`h-3 rounded-full ${
-                          student.risque > 70 ? 'bg-[#EF4444]' : 'bg-[#F97316]'
-                        }`}
-                        style={{ width: `${student.risque}%` }}
+                        className={`h-3 rounded-full ${student.riskScore > 70 ? 'bg-[#EF4444]' : 'bg-[#F97316]'
+                          }`}
+                        style={{ width: `${student.riskScore}%` }}
                       ></div>
                     </div>
-                    <span className="text-[#1E293B] min-w-[3rem]">{student.risque}%</span>
+                    <span className="text-[#1E293B] min-w-[3rem]">{student.riskScore}%</span>
                   </div>
                 </div>
               </div>
-
               {/* Actions */}
               <div className="flex gap-3 mt-4 pt-4 border-t border-[#F1F5F9]">
-                <button className="flex items-center gap-2 px-4 py-2 bg-[#2563EB] text-white rounded-lg hover:bg-[#1E40AF] transition">
-                  <ClipboardList className="w-4 h-4" />
-                  Plan d&apos;action
-                </button>
                 <button className="flex items-center gap-2 px-4 py-2 bg-white border border-[#E2E8F0] text-[#334155] rounded-lg hover:bg-[#F8FAFC] transition">
                   <Mail className="w-4 h-4" />
                   Contacter
                 </button>
-                <button className="px-4 py-2 bg-white border border-[#E2E8F0] text-[#334155] rounded-lg hover:bg-[#F8FAFC] transition">
+                <button
+                  onClick={() => handleShowReco(student)}
+                  className="flex items-center gap-2 px-4 py-2 bg-white border border-[#E2E8F0] text-[#334155] rounded-lg hover:bg-[#F8FAFC] transition"
+                >
+                  <Sparkles className="w-4 h-4 text-[#F59E0B]" />
                   Voir recommandations
                 </button>
               </div>
@@ -222,8 +195,70 @@ export default function StudentsAtRisk({ onNavigate, onLogout }) {
           ))}
         </div>
       </main>
+
+      {/* Reco Builder Modal */}
+      {showRecoModal && (
+        <div className="absolute inset-0 bg-black bg-opacity-50 flex items-center justify-center p-4 z-50 overflow-y-auto">
+          <div className="bg-white w-full max-w-4xl rounded-2xl shadow-xl p-8 max-h-[90vh] overflow-y-auto">
+            <div className="flex justify-between items-center mb-6">
+              <div>
+                <h2 className="text-2xl font-bold text-[#1E293B]">RecoBuilder : Recommandations Ciblées</h2>
+                <p className="text-[#64748B]">
+                  Pour {selectedStudentForReco?.name} (Risque: {selectedStudentForReco?.riskScore}%)
+                </p>
+              </div>
+              <button onClick={closeRecoModal} className="p-2 hover:bg-gray-100 rounded-full">
+                <X className="w-6 h-6 text-[#64748B]" />
+              </button>
+            </div>
+
+            {loadingReco ? (
+              <div className="py-12 text-center text-[#64748B]">Génération des recommandations en cours...</div>
+            ) : recoData ? (
+              <div className="space-y-8">
+                {/* Profile Analysis */}
+                <div className={`p-4 rounded-lg border-l-4 ${recoData.riskLevel === 'Élevé' ? 'bg-[#FEE2E2] border-[#EF4444]' :
+                  recoData.riskLevel === 'Modéré' ? 'bg-[#FED7AA] border-[#F97316]' : 'bg-[#DCFCE7] border-[#22C55E]'
+                  }`}>
+                  <h3 className="font-bold text-[#1E293B] mb-1">Analyse du Profil</h3>
+                  <p className="text-[#334155]">{recoData.studentProfile}</p>
+                </div>
+
+                {/* Recommendation Categories */}
+                <div className="grid md:grid-cols-3 gap-6">
+                  {recoData.categories.map((cat, idx) => (
+                    <div key={idx} className="bg-[#F8FAFC] rounded-xl p-4 border border-[#E2E8F0]">
+                      <div className="flex items-center gap-2 mb-4">
+                        {cat.icon === 'Video' && <PlayCircle className="w-5 h-5" style={{ color: cat.color }} />}
+                        {cat.icon === 'Article' && <FileText className="w-5 h-5" style={{ color: cat.color }} />}
+                        {cat.icon === 'Exercise' && <Activity className="w-5 h-5" style={{ color: cat.color }} />}
+                        <h4 className="font-bold text-[#1E293B]" style={{ color: cat.color }}>{cat.category}</h4>
+                      </div>
+                      <div className="space-y-3">
+                        {cat.items.map((item) => (
+                          <div key={item.id} className="bg-white p-3 rounded-lg shadow-sm border border-[#E2E8F0]">
+                            <div className="flex justify-between items-start mb-1">
+                              <h5 className="text-sm font-semibold text-[#1E293B]">{item.title}</h5>
+                              {item.priority === 1 && <span className="text-[10px] bg-red-100 text-red-600 px-1.5 py-0.5 rounded">Prioritaire</span>}
+                            </div>
+                            <p className="text-xs text-[#64748B] mb-2 line-clamp-2">{item.description}</p>
+                            <div className="flex items-center justify-between text-xs text-[#94A3B8]">
+                              <span>{item.duration}</span>
+                              <a href={item.url} target="_blank" rel="noopener noreferrer" className="text-blue-600 hover:underline">Accéder</a>
+                            </div>
+                          </div>
+                        ))}
+                      </div>
+                    </div>
+                  ))}
+                </div>
+              </div>
+            ) : (
+              <div className="py-12 text-center text-[#64748B]">Aucune recommandation disponible</div>
+            )}
+          </div>
+        </div>
+      )}
     </div>
   );
 }
-
-

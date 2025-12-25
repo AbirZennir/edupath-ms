@@ -36,7 +36,13 @@ export default function SignupPage({ onSignup, onBackToLogin }) {
       };
       const result = await api.register(payload);
       if (result?.token) {
-        onSignup(result.token);
+        // Extract user data from the result
+        const userData = {
+          name: `${formData.firstName} ${formData.lastName}`,
+          email: formData.email,
+          role: 'Enseignant'
+        };
+        onSignup(result.token, userData);
       } else {
         setError('Réponse inattendue du serveur.');
       }

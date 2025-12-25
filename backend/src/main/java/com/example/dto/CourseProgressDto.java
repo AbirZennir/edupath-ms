@@ -7,5 +7,5 @@ import lombok.Data;
 @AllArgsConstructor
 public class CourseProgressDto {
     private String title;
-    private double progress; // 0.0 - 1.0
+    private double progress;  
 }

@@ -1,11 +1,10 @@
 import { GraduationCap, LayoutDashboard, BookOpen, AlertTriangle, Lightbulb, BarChart3, Settings, LogOut } from 'lucide-react';
 
-export default function Sidebar({ currentPage, onNavigate, onLogout }) {
+export default function Sidebar({ currentPage, onNavigate, onLogout, user }) {
   const menuItems = [
     { id: 'dashboard', label: 'Dashboard', icon: LayoutDashboard },
-    { id: 'classes', label: 'Classes & Modules', icon: BookOpen },
+    { id: 'classes', label: 'Modules', icon: BookOpen },
     { id: 'at-risk', label: 'Étudiants à risque', icon: AlertTriangle },
-    { id: 'recommendations', label: 'Recommandations', icon: Lightbulb },
     { id: 'analytics', label: 'Analytics / Rapports', icon: BarChart3 },
     { id: 'settings', label: 'Paramètres', icon: Settings },
   ];
@@ -23,7 +22,7 @@ export default function Sidebar({ currentPage, onNavigate, onLogout }) {
       </div>
 
       {/* Menu */}
-      <nav className="flex-1 p-4">
+      <nav className="p-4">
         <ul className="space-y-2">
           {menuItems.map((item) => {
             const Icon = item.icon;
@@ -48,14 +47,14 @@ export default function Sidebar({ currentPage, onNavigate, onLogout }) {
       </nav>
 
       {/* Avatar enseignant et déconnexion */}
-      <div className="p-4 border-t border-[#E2E8F0]">
+      <div className="p-4 mt-6 border-t border-[#E2E8F0]">
         <div className="flex items-center gap-3 mb-3">
           <div className="w-10 h-10 rounded-full bg-[#2563EB] flex items-center justify-center text-white">
-            MP
+            {user?.name ? user.name.split(' ').map(n => n[0]).join('').toUpperCase().slice(0, 2) : 'MP'}
           </div>
           <div className="flex-1">
-            <p className="text-[#1E293B]">Marie Petit</p>
-            <p className="text-[#94A3B8]">Enseignante</p>
+            <p className="text-[#1E293B]">{user?.name || 'Marie Petit'}</p>
+            <p className="text-[#94A3B8]">{user?.role || 'Enseignante'}</p>
           </div>
         </div>
         <button

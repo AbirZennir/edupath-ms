@@ -1,17 +1,26 @@
 import { useState } from 'react';
-import { User, Link as LinkIcon, Bell, Check } from 'lucide-react';
+import { User, Bell } from 'lucide-react';
 import Sidebar from './Sidebar';
+import { api } from '../api/client';
 
-export default function Settings({ onNavigate, onLogout }) {
+export default function Settings({ onNavigate, onLogout, user }) {
   const [activeTab, setActiveTab] = useState('profile');
-  const [moodleConnected, setMoodleConnected] = useState(true);
-  const [canvasConnected, setCanvasConnected] = useState(false);
   const [notifications, setNotifications] = useState({
     alertesRisque: true,
     recommandations: true,
     rapportsHebdo: true,
     misesAJourModele: false,
   });
+  
+  // Form state for profile
+  const [firstName, setFirstName] = useState(user?.name ? user.name.split(' ')[0] : '');
+  const [lastName, setLastName] = useState(user?.name ? user.name.split(' ').slice(1).join(' ') : '');
+  const [email, setEmail] = useState(user?.email || '');
+  const [department, setDepartment] = useState('Informatique');
+  const [institution, setInstitution] = useState('Université de Paris');
+  const [loading, setLoading] = useState(false);
+  const [success, setSuccess] = useState(false);
+  const [error, setError] = useState(null);
 
   const handleNotificationToggle = (key) => {
     setNotifications(prev => ({
@@ -20,16 +29,48 @@ export default function Settings({ onNavigate, onLogout }) {
     }));
   };
 
+  const handleProfileUpdate = async (e) => {
+    e.preventDefault();
+    setError(null);
+    setSuccess(false);
+    setLoading(true);
+    
+    try {
+      const token = localStorage.getItem('authToken');
+      const updatedData = {
+        firstName,
+        lastName,
+        email,
+        department,
+        institution,
+        name: `${firstName} ${lastName}`.trim()
+      };
+      
+      
+      // Update local storage
+      const currentUser = JSON.parse(localStorage.getItem('user') || '{}');
+      const updatedUser = { ...currentUser, ...updatedData };
+      localStorage.setItem('user', JSON.stringify(updatedUser));
+      
+      setSuccess(true);
+      setTimeout(() => setSuccess(false), 3000);
+    } catch (err) {
+      setError(err?.message || 'Erreur lors de la mise à jour du profil');
+    } finally {
+      setLoading(false);
+    }
+  };
+
   return (
     <div className="flex">
-      <Sidebar currentPage="settings" onNavigate={onNavigate} onLogout={onLogout} />
+      <Sidebar currentPage="settings" onNavigate={onNavigate} onLogout={onLogout} user={user} />
       
       <main className="flex-1 p-8">
         {/* Header */}
         <div className="mb-8">
           <h1 className="text-[#1E293B] mb-2">Paramètres</h1>
           <p className="text-[#64748B]">
-            Gérez votre profil, vos intégrations et vos préférences de notification
+            Gérez votre profil et vos préférences de notification
           </p>
         </div>
 
@@ -45,17 +86,6 @@ export default function Settings({ onNavigate, onLogout }) {
           >
             <User className="w-4 h-4" />
             Profil enseignant
-          </button>
-          <button
-            onClick={() => setActiveTab('integrations')}
-            className={`pb-3 px-2 transition flex items-center gap-2 ${
-              activeTab === 'integrations'
-                ? 'text-[#2563EB] border-b-2 border-[#2563EB]'
-                : 'text-[#64748B] hover:text-[#334155]'
-            }`}
-          >
-            <LinkIcon className="w-4 h-4" />
-            Intégrations LMS
           </button>
           <button
             onClick={() => setActiveTab('notifications')}
@@ -79,7 +109,7 @@ export default function Settings({ onNavigate, onLogout }) {
               {/* Avatar */}
               <div className="flex items-center gap-6 mb-8">
                 <div className="w-20 h-20 rounded-full bg-[#2563EB] flex items-center justify-center text-white text-2xl">
-                  MP
+                  {user?.name ? user.name.split(' ').map(n => n[0]).join('').toUpperCase().slice(0, 2) : 'MP'}
                 </div>
                 <div>
                   <button className="px-4 py-2 bg-[#EFF6FF] text-[#2563EB] rounded-lg hover:bg-[#DBEAFE] transition mb-2">
@@ -96,7 +126,8 @@ export default function Settings({ onNavigate, onLogout }) {
                     <label className="block text-[#334155] mb-2">Prénom</label>
                     <input
                       type="text"
-                      defaultValue="Marie"
+                      value={firstName}
+                      onChange={(e) => setFirstName(e.target.value)}
                       className="w-full px-4 py-2 rounded-lg border border-[#E2E8F0] focus:outline-none focus:ring-2 focus:ring-[#2563EB]"
                     />
                   </div>
@@ -104,7 +135,8 @@ export default function Settings({ onNavigate, onLogout }) {
                     <label className="block text-[#334155] mb-2">Nom</label>
                     <input
                       type="text"
-                      defaultValue="Petit"
+                      value={lastName}
+                      onChange={(e) => setLastName(e.target.value)}
                       className="w-full px-4 py-2 rounded-lg border border-[#E2E8F0] focus:outline-none focus:ring-2 focus:ring-[#2563EB]"
                     />
                   </div>
@@ -114,7 +146,8 @@ export default function Settings({ onNavigate, onLogout }) {
                   <label className="block text-[#334155] mb-2">Email</label>
                   <input
                     type="email"
-                    defaultValue="marie.petit@universite.fr"
+                    value={email}
+                    onChange={(e) => setEmail(e.target.value)}
                     className="w-full px-4 py-2 rounded-lg border border-[#E2E8F0] focus:outline-none focus:ring-2 focus:ring-[#2563EB]"
                   />
                 </div>
@@ -123,7 +156,8 @@ export default function Settings({ onNavigate, onLogout }) {
                   <label className="block text-[#334155] mb-2">Département</label>
                   <input
                     type="text"
-                    defaultValue="Informatique"
+                    value={department}
+                    onChange={(e) => setDepartment(e.target.value)}
                     className="w-full px-4 py-2 rounded-lg border border-[#E2E8F0] focus:outline-none focus:ring-2 focus:ring-[#2563EB]"
                   />
                 </div>
@@ -132,125 +166,52 @@ export default function Settings({ onNavigate, onLogout }) {
                   <label className="block text-[#334155] mb-2">Établissement</label>
                   <input
                     type="text"
-                    defaultValue="Université de Paris"
+                    value={institution}
+                    onChange={(e) => setInstitution(e.target.value)}
                     className="w-full px-4 py-2 rounded-lg border border-[#E2E8F0] focus:outline-none focus:ring-2 focus:ring-[#2563EB]"
                   />
                 </div>
               </div>
 
+              {/* Success/Error Messages */}
+              {success && (
+                <div className="mt-4 rounded-lg border border-[#86EFAC] bg-[#F0FDF4] px-4 py-3 text-[#15803D]">
+                  Profil mis à jour avec succès!
+                </div>
+              )}
+              {error && (
+                <div className="mt-4 rounded-lg border border-[#FECACA] bg-[#FEF2F2] px-4 py-3 text-[#B91C1C]">
+                  {error}
+                </div>
+              )}
+
               <div className="flex gap-3 mt-6 pt-6 border-t border-[#E2E8F0]">
-                <button className="px-6 py-2 bg-[#2563EB] text-white rounded-lg hover:bg-[#1E40AF] transition">
-                  Enregistrer les modifications
+                <button 
+                  onClick={handleProfileUpdate}
+                  disabled={loading}
+                  className="px-6 py-2 bg-[#2563EB] text-white rounded-lg hover:bg-[#1E40AF] transition disabled:opacity-50 disabled:cursor-not-allowed"
+                >
+                  {loading ? 'Enregistrement...' : 'Enregistrer les modifications'}
                 </button>
-                <button className="px-6 py-2 bg-white border border-[#E2E8F0] text-[#334155] rounded-lg hover:bg-[#F8FAFC] transition">
+                <button 
+                  onClick={() => {
+                    setFirstName(user?.name ? user.name.split(' ')[0] : '');
+                    setLastName(user?.name ? user.name.split(' ').slice(1).join(' ') : '');
+                    setEmail(user?.email || '');
+                    setDepartment('Informatique');
+                    setInstitution('Université de Paris');
+                    setError(null);
+                    setSuccess(false);
+                  }}
+                  disabled={loading}
+                  className="px-6 py-2 bg-white border border-[#E2E8F0] text-[#334155] rounded-lg hover:bg-[#F8FAFC] transition disabled:opacity-50 disabled:cursor-not-allowed"
+                >
                   Annuler
                 </button>
               </div>
             </div>
 
-            {/* Section sécurité */}
-            <div className="bg-white rounded-2xl p-6 shadow-sm">
-              <h3 className="text-[#1E293B] mb-6">Sécurité</h3>
-              <button className="text-[#2563EB] hover:text-[#1E40AF]">
-                Changer le mot de passe
-              </button>
-            </div>
-          </div>
-        )}
-
-        {activeTab === 'integrations' && (
-          <div className="max-w-3xl">
-            <div className="bg-white rounded-2xl p-6 shadow-sm mb-6">
-              <h3 className="text-[#1E293B] mb-2">Connectez vos plateformes LMS</h3>
-              <p className="text-[#64748B] mb-6">
-                Synchronisez vos données avec vos systèmes de gestion de l&apos;apprentissage
-              </p>
-
-              <div className="space-y-4">
-                {/* Moodle */}
-                <div className="border border-[#E2E8F0] rounded-lg p-6">
-                  <div className="flex items-start justify-between">
-                    <div className="flex items-center gap-4 flex-1">
-                      <div className="w-12 h-12 bg-[#F97316] rounded-lg flex items-center justify-center text-white">
-                        M
-                      </div>
-                      <div className="flex-1">
-                        <h4 className="text-[#1E293B] mb-1">Moodle</h4>
-                        <p className="text-[#64748B] mb-2">
-                          Synchronisez vos cours, étudiants et activités depuis Moodle
-                        </p>
-                        {moodleConnected && (
-                          <div className="flex items-center gap-2 text-[#22C55E]">
-                            <Check className="w-4 h-4" />
-                            <span>Connecté à moodle.universite.fr</span>
-                          </div>
-                        )}
-                      </div>
-                    </div>
-                    <button
-                      onClick={() => setMoodleConnected(!moodleConnected)}
-                      className={`px-6 py-2 rounded-lg transition whitespace-nowrap ${
-                        moodleConnected
-                          ? 'bg-[#FEE2E2] text-[#EF4444] hover:bg-[#FECACA]'
-                          : 'bg-[#2563EB] text-white hover:bg-[#1E40AF]'
-                      }`}
-                    >
-                      {moodleConnected ? 'Déconnecter' : 'Connecter Moodle'}
-                    </button>
-                  </div>
-                  {moodleConnected && (
-                    <div className="mt-4 pt-4 border-t border-[#F1F5F9]">
-                      <p className="text-[#94A3B8] mb-2">Dernière synchronisation : Il y a 5 minutes</p>
-                      <button className="text-[#2563EB] hover:text-[#1E40AF]">
-                        Synchroniser maintenant
-                      </button>
-                    </div>
-                  )}
-                </div>
-
-                {/* Canvas */}
-                <div className="border border-[#E2E8F0] rounded-lg p-6">
-                  <div className="flex items-start justify-between">
-                    <div className="flex items-center gap-4 flex-1">
-                      <div className="w-12 h-12 bg-[#EF4444] rounded-lg flex items-center justify-center text-white">
-                        C
-                      </div>
-                      <div className="flex-1">
-                        <h4 className="text-[#1E293B] mb-1">Canvas LMS</h4>
-                        <p className="text-[#64748B] mb-2">
-                          Intégrez vos données Canvas pour une analyse complète
-                        </p>
-                        {canvasConnected && (
-                          <div className="flex items-center gap-2 text-[#22C55E]">
-                            <Check className="w-4 h-4" />
-                            <span>Connecté à canvas.universite.fr</span>
-                          </div>
-                        )}
-                      </div>
-                    </div>
-                    <button
-                      onClick={() => setCanvasConnected(!canvasConnected)}
-                      className={`px-6 py-2 rounded-lg transition whitespace-nowrap ${
-                        canvasConnected
-                          ? 'bg-[#FEE2E2] text-[#EF4444] hover:bg-[#FECACA]'
-                          : 'bg-[#2563EB] text-white hover:bg-[#1E40AF]'
-                      }`}
-                    >
-                      {canvasConnected ? 'Déconnecter' : 'Connecter Canvas'}
-                    </button>
-                  </div>
-                </div>
-              </div>
-            </div>
-
-            {/* Informations OAuth */}
-            <div className="bg-[#EFF6FF] border border-[#93C5FD] rounded-2xl p-6">
-              <h4 className="text-[#1E293B] mb-2">Authentification sécurisée OAuth 2.0</h4>
-              <p className="text-[#64748B]">
-                Toutes les connexions utilisent le protocole OAuth 2.0 pour garantir la sécurité de vos données.
-                Vos identifiants LMS ne sont jamais stockés sur nos serveurs.
-              </p>
-            </div>
+           
           </div>
         )}
 

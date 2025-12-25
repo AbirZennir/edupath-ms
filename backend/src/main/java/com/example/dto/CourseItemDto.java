@@ -8,7 +8,11 @@ import lombok.NoArgsConstructor;
 @NoArgsConstructor
 @AllArgsConstructor
 public class CourseItemDto {
+    private String id;
+    private String codeModule;
+    private String codePresentation;
     private String title;
-    private String professor;
-    private String status; // in_progress | done
+    private int studentsCount;
+    private int successRate;
+    private int completion;
 }

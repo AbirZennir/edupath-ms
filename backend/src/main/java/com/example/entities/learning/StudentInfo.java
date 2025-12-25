@@ -15,8 +15,9 @@ import java.util.List;
 @Table(name = "studentInfo")
 public class StudentInfo {
     @Id
-    @GeneratedValue(strategy = GenerationType.IDENTITY)
     private int id_student;
+    private String code_module;
+    private String code_presentation;
     private String gender;
     private String imd_band;
     private String highest_education;

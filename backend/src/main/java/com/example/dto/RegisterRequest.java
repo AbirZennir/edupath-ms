@@ -10,6 +10,5 @@ public class RegisterRequest {
     private String password;
     private String departement;
     private String institution;
-    // Accepte des valeurs comme "PROFESSEUR" ou "ENSEIGNANT" (qui seront mappées côté service)
     private String role;
 }
