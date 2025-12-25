@@ -1,0 +1,25 @@
+server:
+  port: 8888
+
+spring:
+  main:
+    allow-bean-definition-overriding: true
+  application:
+    name: gateway
+  cloud:
+    gateway:
+      httpclient:
+        connect-timeout: 5000
+        response-timeout: 10s
+      server:
+        webmvc:
+          routes:
+            - id: backend_route
+              uri: http://backend:8082
+              predicates:
+                - Path=/api/**
+            - id: ai_service_route
+              uri: http://ml:8000
+              predicates:
+                - Path=/ai/**
+

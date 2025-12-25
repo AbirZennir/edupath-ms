@@ -1,0 +1,16 @@
+# Ignore all files in backend/data/
+backend/data/
+
+# Environment variables
+.env
+
+# IDE
+.idea/
+
+# Dependencies and build artifacts
+node_modules/
+__pycache__/
+*.pyc
+dist/
+build/
+.DS_Store

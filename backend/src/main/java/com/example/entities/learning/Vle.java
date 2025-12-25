@@ -1,0 +1,31 @@
+package com.example.entities.learning;
+
+import jakarta.persistence.Entity;
+import jakarta.persistence.Id;
+import jakarta.persistence.JoinColumn;
+import jakarta.persistence.JoinColumns;
+import jakarta.persistence.ManyToOne;
+import lombok.AllArgsConstructor;
+import lombok.Data;
+import lombok.NoArgsConstructor;
+
+@Data
+@NoArgsConstructor
+@AllArgsConstructor
+@Entity
+public class Vle {
+    @Id
+    private int id_site;
+    private String code_module;
+    private String code_presentation;
+    private String activity_type;
+    private int week_from;
+    private int week_to;
+
+    @ManyToOne
+    @JoinColumns({
+            @JoinColumn(name = "code_module", referencedColumnName = "code_module", insertable = false, updatable = false),
+            @JoinColumn(name = "code_presentation", referencedColumnName = "code_presentation", insertable = false, updatable = false)
+    })
+    private Courses course;
+}

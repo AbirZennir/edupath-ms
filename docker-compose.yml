@@ -1,0 +1,54 @@
+version: '3.8'
+
+services:
+  backend:
+    build: ./backend
+    container_name: edupath-backend
+    ports:
+      - "8081:8082" 
+    environment:
+      - FASTAPI_URL=http://ml:8000
+      - CSV_IMPORT_ENABLED=false
+      - CSV_IMPORT_PATH=/app/data
+    volumes:
+      - ./data:/app/data
+    restart: on-failure
+    networks:
+      - edupath-net
+
+  gateway:
+    build: ./gateway
+    container_name: edupath-gateway
+    ports:
+      - "8888:8888"
+    environment:
+      - BACKEND_URI=http://backend:8080
+      - ML_URI=http://ml:8000
+    depends_on:
+      - backend
+      - ml
+    restart: on-failure
+    networks:
+      - edupath-net
+
+  frontendweb:
+    build: ./frontendweb
+    container_name: edupath-frontend
+    ports:
+      - "5173:80"
+    restart: on-failure
+    networks:
+      - edupath-net
+
+  ml:
+    build: ./machine_learning
+    container_name: edupath-ml
+    ports:
+      - "8000:8000"
+    restart: on-failure
+    networks:
+      - edupath-net
+
+networks:
+  edupath-net:
+    driver: bridge
