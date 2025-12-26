@@ -19,7 +19,7 @@ public class Assessment {
     private String code_presentation;
     private String assessment_type;
     private int date;
-    private int weight;
+    private double weight;
 
     @ManyToOne
     @JoinColumns({

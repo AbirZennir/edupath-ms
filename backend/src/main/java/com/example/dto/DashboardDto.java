@@ -11,8 +11,8 @@ import java.util.List;
 @AllArgsConstructor
 public class DashboardDto {
     private String greetingName;
-    private double generalProgress; // 0.0 - 1.0
-    private double deltaWeek;       // e.g. +5% -> 0.05
+    private double generalProgress; 
+    private double deltaWeek;      
     private List<CourseProgressDto> courses;
     private List<AssignmentDto> urgentAssignments;
 }

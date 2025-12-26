@@ -10,6 +10,6 @@ import lombok.NoArgsConstructor;
 public class AssignmentItemDto {
     private String title;
     private String course;
-    private int dueInDays; // ex: 2 => dans 2 jours, -3 => rendu il y a 3 jours
-    private String status; // pending | done
+    private int dueInDays;  
+    private String status;  
 }

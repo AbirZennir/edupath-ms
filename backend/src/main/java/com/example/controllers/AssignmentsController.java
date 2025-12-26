@@ -12,23 +12,16 @@ import org.springframework.web.bind.annotation.RestController;
 import java.util.List;
 
 @RestController
-@RequestMapping("/assignments")
+@RequestMapping("/api/assignments")
 public class AssignmentsController {
 
     @Autowired
     private AssignmentsService assignmentsService;
 
-    /**
-     * Liste des devoirs pour l'écran "Mes Devoirs".
-     * Paramètres optionnels :
-     *  - status = all | pending | done
-     *  - q      = texte de recherche
-     */
     @GetMapping(produces = MediaType.APPLICATION_JSON_VALUE + ";charset=UTF-8")
     public List<AssignmentItemDto> listAssignments(
             @RequestParam(name = "status", required = false) String status,
-            @RequestParam(name = "q", required = false) String search
-    ) {
+            @RequestParam(name = "q", required = false) String search) {
         return assignmentsService.listAssignments(status, search);
     }
 }

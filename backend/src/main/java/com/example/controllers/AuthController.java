@@ -19,7 +19,7 @@ import org.springframework.web.bind.annotation.RestController;
 import java.util.Map;
 
 @RestController
-@RequestMapping("/auth")
+@RequestMapping("/api/auth")
 public class AuthController {
 
     @Autowired
@@ -32,14 +32,14 @@ public class AuthController {
     private PasswordEncoder passwordEncoder;
 
     @PostMapping("/register")
-    public ResponseEntity<AuthResponse> register(@RequestBody RegisterRequest request){
+    public ResponseEntity<AuthResponse> register(@RequestBody RegisterRequest request) {
         Utilisateur created = utilisateurService.register(request);
         String token = jwtUtils.generateToken(created.getEmail());
         return ResponseEntity.status(HttpStatus.CREATED).body(new AuthResponse(token));
     }
 
     @PostMapping("/login")
-    public ResponseEntity<AuthResponse> login(@RequestBody LoginRequest loginData){
+    public ResponseEntity<AuthResponse> login(@RequestBody LoginRequest loginData) {
         String email = loginData.getEmail();
         String password = loginData.getPassword();
         Utilisateur utilisateur = utilisateurService.findByEmail(email);

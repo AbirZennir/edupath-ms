@@ -10,8 +10,7 @@ import java.util.List;
 public class GradesService {
 
     public GradesDto getGradesForStudent(int studentId) {
-        // Données mockées alignées sur l'écran mobile.
-        List<GradeItemDto> grades = List.of(
+         List<GradeItemDto> grades = List.of(
                 new GradeItemDto("Mathématiques", 15.5),
                 new GradeItemDto("Physique", 14.0),
                 new GradeItemDto("Informatique", 17.0),

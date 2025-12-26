@@ -9,7 +9,7 @@ import org.springframework.web.bind.annotation.*;
 import java.util.List;
 
 @RestController
-@RequestMapping("eduPath")
+@RequestMapping("/api")
 public class ProfesseurController {
     @Autowired
     private ProfesseurRepository professeurRepository;
@@ -58,4 +58,3 @@ public class ProfesseurController {
                 .orElse(ResponseEntity.notFound().build());
     }
 }
-
